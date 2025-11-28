@@ -33,8 +33,16 @@
       overflow: hidden;
     }
 
-    /* Frame container */
-   .frame {
+    /* Scalable wrapper centered on screen */
+.frame-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform-origin: top left; /* scale from top-left */
+}
+
+/* Frame actual size so scroll works */
+.frame {
   width: 1200px;
   height: 700px;
   border: 10px solid #444;
@@ -42,25 +50,26 @@
   background: var(--slide-bg);
   box-shadow: 0 0 30px rgba(0,0,0,0.7);
   overflow: hidden;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  /* Center the frame */
-  transform: translate(-50%, -50%);
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
-/* Scale proportionally to fit viewport */
-@media (max-width: 1200px), (max-height: 700px) {
-  .frame {
-    transform: translate(-50%, -50%)
-               scale(calc(min(100vw / 1200, 100vh / 700)));
-    transform-origin: center center; /* ✅ ensures no left cutoff */
+/* Auto-scale wrapper and center it */
+@media screen and (max-width: 1200px), screen and (max-height: 700px) {
+  .frame-wrapper {
+    transform: translate(-50%, -50%) scale(calc(min(100vw / 1200, 100vh / 700)));
   }
 }
 
-    
+/* Full-size on big screens */
+@media screen and (min-width: 1200px) and (min-height: 700px) {
+  .frame-wrapper {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+
 
     .slide {
       display: none;
@@ -644,8 +653,8 @@
   </style>
 </head>
 <body>
-
-    <div class="frame">
+<div class="frame-wrapper">
+<div class="frame">
     <!-- Slide 1 -->
     <section class="slide _1 active">
       <div class="text-frame zoom" style="font-size: 5em; margin-bottom: 20px;">
@@ -1034,6 +1043,9 @@
     </div>
   </div>
 
+</div>
+    
+
   <script>
     let current = 0;
     const slides = document.querySelectorAll('.slide');
@@ -1263,4 +1275,3 @@
   </script>
 </body>
 </html>
-
