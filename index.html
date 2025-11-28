@@ -150,14 +150,7 @@
         transform: scale(1);
       }
     }
-    @media (hover: hover) and (pointer: fine) {
-      button:hover:not(:disabled),
-      .choice:hover {
-      background: #666;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      }
-    }
+
     .slide {
       display: none;
       flex: 1;
@@ -444,7 +437,14 @@
       font-weight: bold;
       touch-action: manipulation;
     }
-
+    @media (hover: hover) and (pointer: fine) {
+      button:hover:not(:disabled),
+      .choice:hover {
+      background: #666;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      }
+    }
     button:hover:not(:disabled) {
       background: #666;
       transform: translateY(-2px);
@@ -459,6 +459,10 @@
       background: #666;
       cursor: not-allowed;
       opacity: 0.6;
+    }
+    button:focus,
+    .choice:focus {
+    outline: none;
     }
 
     @keyframes fadeIn {
@@ -1175,6 +1179,12 @@
     const activitySlideIndex = 9; // Index of the activity slide (0-based)
     let testCompleted = false;
     let activityCompleted = false;
+    document.addEventListener("touchend", function () {
+    document.querySelectorAll("button, .choice").forEach(el => {
+    el.blur();              // clears focus
+    el.classList.remove("hover"); // if you use a custom hover class
+    });
+    });
     
     // DOM elements
     const nextBtn = document.getElementById('next-btn');
@@ -1396,4 +1406,3 @@
   </script>
 </body>
 </html>
-
