@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Interactive Presentation with Frame</title>
   <style>
     :root {
@@ -33,182 +33,287 @@
       overflow: hidden;
     }
 
-   /* Centering wrapper */
-.center-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: #222; /* optional */
-}
+    /* Mobile-first scaling approach */
+    .center-wrapper {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-/* Scale wrapper */
-.frame-wrapper {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
+    .frame-wrapper {
+      transform-origin: top left;
+      max-width: 100%;
+      max-height: 100%;
+    }
 
-/* Frame with flexible sizing */
-.frame {
-  width: 100%;
-  height: 100%;
-  max-width: 1200px;  /* original design width */
-  max-height: 700px;  /* original design height */
-  border: 10px solid #444;
-  border-radius: 15px;
-  background: var(--slide-bg);
-  box-shadow: 0 0 30px rgba(0,0,0,0.7);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  position: relative;
-}
-/* Maintain aspect ratio using "fit" */
-.frame-wrapper {
-  aspect-ratio: 1200 / 700;  /* ensures frame fills screen proportionally */
-}
+    .frame {
+      width: 1200px;
+      height: 700px;
+      border: 10px solid #444;
+      border-radius: 15px;
+      background: var(--slide-bg);
+      box-shadow: 0 0 30px rgba(0,0,0,0.7);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
 
+    /* Responsive scaling */
+    @media screen and (max-width: 1200px), screen and (max-height: 700px) {
+      .frame-wrapper {
+        transform: scale(calc(min(100vw / 1200, 100vh / 700)));
+      }
+    }
 
-/* Responsive scaling */
-@media screen and (max-width: 1200px), screen and (max-height: 700px) {
-  .frame-wrapper {
-    transform: scale(calc(min(100vw / 1200, 100vh / 700)));
-  }
-}
+    /* Mobile-specific adjustments */
+    @media screen and (max-width: 768px) {
+      .frame-wrapper {
+        transform: scale(calc(min(100vw / 1200, 100vh / 700)));
+        padding: 10px;
+      }
+      
+      .frame {
+        width: 100vw;
+        height: 100vh;
+        border-width: 5px;
+      }
+      
+      .slide {
+        padding: 0.5em;
+        overflow-y: auto;
+      }
+      
+      .text-frame {
+        margin: 0.3em auto;
+        padding: 10px;
+        border-radius: 10px;
+        border-width: 3px;
+        max-width: 95%;
+      }
+      
+      h1 {
+        font-size: clamp(1.2rem, 6vw, 2em);
+      }
+      
+      p {
+        font-size: clamp(0.9rem, 4vw, 1.1em);
+      }
+      
+      .choice {
+        padding: 12px 16px;
+        font-size: 0.9em;
+        border-radius: 6px;
+      }
+      
+      button {
+        padding: 10px 20px;
+        font-size: 0.9em;
+      }
+      
+      .slide-nav {
+        padding: 8px 15px;
+        bottom: 0;
+      }
+      
+      .controls {
+        gap: 10px;
+      }
+      
+      .case-button {
+        padding: 12px 20px;
+        font-size: 1em;
+        margin: 5px;
+      }
+      
+      .answer-input {
+        width: 180px;
+        height: 40px;
+        font-size: 0.9em;
+      }
+      
+      .jumbled-letters {
+        font-size: 1.1em;
+        letter-spacing: 2px;
+      }
+    }
 
+    /* Tablet adjustments */
+    @media screen and (min-width: 769px) and (max-width: 1024px) {
+      .frame-wrapper {
+        transform: scale(calc(min(100vw / 1200, 100vh / 700)));
+      }
+      
+      .text-frame {
+        margin: 0.4em auto;
+        padding: 12px;
+      }
+      
+      h1 {
+        font-size: clamp(1.4rem, 5vw, 2.2em);
+      }
+      
+      p {
+        font-size: clamp(1rem, 3vw, 1.15em);
+      }
+      
+      .choice {
+        padding: 14px 18px;
+        font-size: 1em;
+      }
+    }
 
-  /* Slides full-size */
-.slide {
-  width: 100%;
-  height: 100%;
-  display: none;
-  overflow-y: auto;
-}
+    /* Desktop styles */
+    @media screen and (min-width: 1200px) and (min-height: 700px) {
+      .frame-wrapper {
+        transform: scale(1);
+      }
+    }
 
-/* Show active slide */
-.slide.active {
-  display: flex;
-  flex-direction: column;
-}
+    .slide {
+      display: none;
+      flex: 1;
+      width: 100%;
+      padding: 1em;
+      box-sizing: border-box;
+      text-align: center;
+      color: #fff;
+      overflow-y: auto;
+      position: relative;
+      padding-bottom: 80px;
+    }
 
-    /* BACKGROUND IMAGES WITH FALLBACKS */
+    .slide.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      animation: fadeIn 0.5s ease;
+      padding-top: 0.5em;
+    }
+
+    /* Slide backgrounds with fallbacks */
     .slide._1 {
       background: url("images/Frame1.png") no-repeat center center;
       background-size: cover;
-      background-color: #1e3c72; /* fallback color */
+      background-color: #1e3c72;
     }
 
     .slide._2 {
       background: url("images/Frame2.png") no-repeat center center;
       background-size: cover;
-      background-color: #134e5e; /* fallback color */
+      background-color: #134e5e;
     }
 
     .slide._3 {
       background: url("images/Frame3.png") no-repeat center center;
       background-size: cover;
-      background-color: #8360c3; /* fallback color */
+      background-color: #8360c3;
     }
 
     .slide._4 {
       background: url("images/Frame4.png") no-repeat center center;
       background-size: cover;
-      background-color: #f093fb; /* fallback color */
+      background-color: #f093fb;
     }
 
     .slide._5 {
       background: url("images/Frame5.png") no-repeat center center;
       background-size: cover;
-      background-color: #4facfe; /* fallback color */
+      background-color: #4facfe;
     }
 
     .slide._6 {
       background: url("images/Frame4.png") no-repeat center center;
       background-size: cover;
-      background-color: #fa709a; /* fallback color */
+      background-color: #fa709a;
     }
 
     .slide._7 {
       background: url("images/Frame5.png") no-repeat center center;
       background-size: cover;
-      background-color: #30cfd0; /* fallback color */
+      background-color: #30cfd0;
     }
 
     .slide._8 {
       background: url("images/Frame6.png") no-repeat center center;
       background-size: cover;
-      background-color: #7b68ee; /* fallback color */
+      background-color: #7b68ee;
     }
 
     .slide._9 {
       background: url("images/Frame6.png") no-repeat center center;
       background-size: cover;
-      background-color: #7b68ee; /* fallback color */
+      background-color: #7b68ee;
     }
 
     .slide._10 {
       background: url("images/Frame7.png") no-repeat center center;
       background-size: cover;
-      background-color: #ff6b6b; /* fallback color */
+      background-color: #ff6b6b;
     }
 
     .slide._11 {
       background: url("images/Frame7.png") no-repeat center center;
       background-size: cover;
-      background-color: #ff6b6b; /* fallback color */
+      background-color: #ff6b6b;
     }
 
     .slide._12 {
       background: url("images/Frame7.png") no-repeat center center;
       background-size: cover;
-      background-color: #ff6b6b; /* fallback color */
+      background-color: #ff6b6b;
     }
 
     .slide._13 {
       background: url("images/Frame7.png") no-repeat center center;
       background-size: cover;
-      background-color: #ff6b6b; /* fallback color */
+      background-color: #ff6b6b;
     }
 
     .slide._14 {
       background: url("images/Frame7.png") no-repeat center center;
       background-size: cover;
-      background-color: #ff6b6b; /* fallback color */
+      background-color: #ff6b6b;
     }
+    
     .slide._15 {
       background: url("images/Frame7.png") no-repeat center center;
       background-size: cover;
-      background-color: #ff6b6b; /* fallback color */
+      background-color: #ff6b6b;
     }
+    
     .slide._16 {
       background: url("images/Frame7.png") no-repeat center center;
       background-size: cover;
-      background-color: #ff6b6b; /* fallback color */
+      background-color: #ff6b6b;
     }
+    
     .slide._17 {
       background: url("images/Frame7.png") no-repeat center center;
       background-size: cover;
-      background-color: #ff6b6b; /* fallback color */
+      background-color: #ff6b6b;
     }
 
-    /* Slide Navigation at Bottom */
     .slide-nav {
-  position: absolute;
-  bottom: 1%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 5px;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+    }
 
     .controls {
       display: flex;
@@ -225,12 +330,19 @@
       line-height: 1.6;
     }
 
-    /* Text frames scale with frame */
-.text-frame {
-  max-width: 90%;
-  font-size: clamp(0.8rem, 2vw, 1rem);
-  padding: clamp(8px, 1.5vw, 15px);
-}
+    .text-frame {
+      margin: 0.5em auto;
+      background: var(--text-bg);
+      color: #000;
+      padding: 15px;
+      border-radius: 15px;
+      border: 5px solid rgba(92, 92, 92, 0.65);
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+      text-align: center;
+      max-width: 90%;
+      animation: fadeIn 0.8s ease;
+    }
+
     .text-frame.left-align {
       position: absolute;
       left: 8%;
@@ -238,6 +350,7 @@
       max-width: 30%;
       text-align: left;
     }
+    
     .text-frame.right-align {
       position: absolute;
       right: 8%;
@@ -337,10 +450,18 @@
     }
 
     button {
-  padding: clamp(8px, 2vw, 12px) clamp(12px, 3vw, 24px);
-  font-size: clamp(0.8rem, 1.5vw, 1rem);
-}
-
+      background: var(--primary-color);
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      margin: 0 10px;
+      cursor: pointer;
+      font-size: 1em;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      font-weight: bold;
+      touch-action: manipulation;
+    }
 
     button:hover:not(:disabled) {
       background: #666;
@@ -382,6 +503,7 @@
       cursor: pointer;
       box-shadow: 0 2px 5px rgba(0,0,0,0.3);
       transition: all 0.3s ease;
+      touch-action: manipulation;
     }
 
     .choice:hover {
@@ -634,18 +756,34 @@
     .case-button.red {
       background-color: #ff5252;
     }
-    /* Ensure scroll works on mobile */
-.frame::-webkit-scrollbar {
-  width: 8px;
-}
 
-.frame::-webkit-scrollbar-thumb {
-  background-color: rgba(255, 255, 255, 0.3);
-  border-radius: 4px;
-}
-
-
-
+    /* Mobile-specific adjustments for quiz */
+    @media screen and (max-width: 768px) {
+      .choices-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      
+      .choice {
+        padding: 12px;
+        font-size: 0.9em;
+      }
+      
+      .quiz-container {
+        width: 95%;
+        padding: 0 5px;
+      }
+      
+      .question {
+        padding: 12px;
+      }
+      
+      .check-answers-btn {
+        width: 100%;
+        margin-top: 15px;
+        padding: 12px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -654,20 +792,20 @@
 <div class="frame">
     <!-- Slide 1 -->
     <section class="slide _1 active">
-      <div class="text-frame zoom" style="font-size: 5em; margin-bottom: 20px;">
+      <div class="text-frame zoom" style="font-size: clamp(3rem, 8vw, 5em); margin-bottom: 15px;">
         <strong>Eco-Knowledge Cultural <br> Digitized Science Module</strong>
       </div>
-      <div class="text-frame zoom" style="background: var(--frame-bg); font-size: 3em; margin-bottom: 20px;">
+      <div class="text-frame zoom" style="background: var(--frame-bg); font-size: clamp(2rem, 6vw, 3em); margin-bottom: 15px;">
         <strong>Marine and Coastal <br> Processes in Coastal Communities</strong>
       </div>
-      <div class="text-frame zoom" style="background: var(--frame-bg); font-size: 1.8em;">
+      <div class="text-frame zoom" style="background: var(--frame-bg); font-size: clamp(1.2rem, 4vw, 1.8em);">
         <strong>Contextualized for Siargao Island <br> (Sta. Monica, Surigao del Norte)</strong>
       </div>
     </section>
 
     <!-- Slide 2 -->
     <section class="slide _2">
-      <div class="text" style="color:#000; font-size: clamp(2rem, 5vw, 4em);">
+      <div class="text" style="color:#000; font-size: clamp(1.8rem, 6vw, 4em);">
         <strong>EARTH SCIENCE 11 </strong><br>
         Marine and Coastal Processes
       </div>
@@ -675,7 +813,7 @@
 
     <!-- Slide 3 -->
     <section class="slide _3">
-      <div class="text-frame zoom" style="font-size: 1.8em; text-align: left; max-width: 85%;">
+      <div class="text-frame zoom" style="font-size: clamp(1.2rem, 4vw, 1.8em); text-align: left; max-width: 95%;">
         <strong>Welcome to Your Digitized Self-Learning Module</strong><br><br>
         This Digitized Self-Learning Module (DSLM) is designed so you can continue learning anytime, anywhere, even at home. Each part of the module is interactive—you will click, drag, and select answers to explore the lesson step by step.<br><br>
         The module has several sections to guide you:
@@ -691,7 +829,7 @@
 
     <!-- Slide 4 -->
     <section class="slide _4">
-      <div class="text-frame zoom" style="font-size: 1.8em; background: rgba(255, 255, 255, 0.8); text-align: left; max-width: 85%;">
+      <div class="text-frame zoom" style="font-size: clamp(1.2rem, 4vw, 1.8em); background: rgba(255, 255, 255, 0.8); text-align: left; max-width: 95%;">
         <strong>About this Digitized Module </strong><br><br>
         This module was designed and written with you in mind. It will help you explore and understand important concepts in <strong>Earth Science</strong>, focusing on the nature of marine and coastal processes. The activities are interactive—you will click, drag, and select answers as you go along—so that learning feels more engaging and practical.<br><br>
         The scope of this module allows it to be used in different learning settings. The language is simple and student-friendly, recognizing that learners may have varied vocabulary levels. The lesson follows the standard sequence of the course, but you can also explore the parts in a flexible way, depending on your pace and needs.
@@ -700,7 +838,7 @@
 
     <!-- Slide 5 -->
     <section class="slide _5">
-      <div class="text-frame zoom" style="font-size: 1.8em;background: rgba(255, 255, 255, 0.8); text-align: left; max-width: 85%;">
+      <div class="text-frame zoom" style="font-size: clamp(1.2rem, 4vw, 1.8em);background: rgba(255, 255, 255, 0.8); text-align: left; max-width: 95%;">
         <strong>This module covers: </strong><br><br>
         <strong>Lesson 1 – Effects of Marine and Coastal Processes<br><br>
         After completing this module, you are expected to:</strong><br>
@@ -715,10 +853,10 @@
 
     <!-- Slide 6 - ALL QUESTIONS IN ONE SLIDE -->
     <section class="slide _6">
-      <div class="text-frame" style="background: rgba(255, 255, 255, 0.8); font-size: 1.8em; margin-top: 0.5em;">
+      <div class="text-frame" style="background: rgba(255, 255, 255, 0.8); font-size: clamp(1.5rem, 5vw, 1.8em); margin-top: 0.5em;">
         <strong>What I know</strong>
       </div>
-      <div class="text-frame zoom" style="background: rgba(255, 231, 123, 0.8); font-size: 1.5em; margin-top: 0.3em;">
+      <div class="text-frame zoom" style="background: rgba(255, 231, 123, 0.8); font-size: clamp(1.2rem, 4vw, 1.5em); margin-top: 0.3em;">
         Choose and click the correct answer.
       </div>
       <div class="quiz-container">
@@ -845,7 +983,7 @@
 
     <!-- Slide 7 - Lesson 1 -->
     <section class="slide _7">
-      <div class="text-frame" style="background: rgba(255, 255, 255, 0.9); font-size: clamp(2rem, 5vw, 4em); color: #000000;">
+      <div class="text-frame" style="background: rgba(255, 255, 255, 0.9); font-size: clamp(1.8rem, 6vw, 4em); color: #000000;">
         <strong>LESSON 1 </strong><br>
         Effects of Marine and Coastal Processes
       </div>
@@ -853,27 +991,27 @@
 
     <!-- Slide 8 - NEW SLIDE with Frame6.png background -->
     <section class="slide _8">
-      <div class="text-frame left-align" style="background-color: rgba(255, 255, 255, 0.637);font-size: 1.3em; line-height: 2;">
+      <div class="text-frame left-align" style="background-color: rgba(255, 255, 255, 0.637);font-size: clamp(1rem, 3vw, 1.3em); line-height: 1.8;">
         <strong>The coast is one of the most active parts of the Earth's surface. In the Philippines, many people live near coastal areas and depend on mangroves, seagrass, beach forests, and coral reefs for food and protection. Local fishers and elders know that mangroves help reduce the impact of strong waves and storms, while coral reefs serve as homes for many fish.</strong>
       </div>
     </section>
 
     <!-- Slide 9 - NEW SLIDE with same Frame6.png background -->
     <section class="slide _9">
-      <div class="text-frame left-align" style="background-color: rgba(255, 255, 255, 0.637) ; font-size: 1.3em; line-height: 2;">
+      <div class="text-frame left-align" style="background-color: rgba(255, 255, 255, 0.637) ; font-size: clamp(1rem, 3vw, 1.3em); line-height: 1.8;">
         <strong>Coastal processes such as waves, tides, and erosion continuously shape the land and sea. These are natural events, but when disturbed by human activities, they can lead to hazards like coastal flooding and storm surges. Knowing both scientific facts and local observations helps communities better understand and protect their coastal environment.</strong>
       </div>
     </section>
 
     <!-- Slide 10 - ACTIVITY SLIDE with Frame7.png background -->
     <section class="slide _10">
-      <div class="text-frame top-left" style="font-size: 1.8em; font-weight: bold;">
+      <div class="text-frame top-left" style="font-size: clamp(1.5rem, 5vw, 1.8em); font-weight: bold;">
         What's In
       </div>
-      <div class="text-frame top-center" style="font-size: 2.2em; font-weight: bold; background: rgba(255, 255, 255, 0.9); color: #000;">
+      <div class="text-frame top-center" style="font-size: clamp(1.8rem, 5vw, 2.2em); font-weight: bold; background: rgba(255, 255, 255, 0.9); color: #000;">
         ACTIVITY 1
       </div>
-      <div class="text-frame zoom" style="background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 85%; margin-top: 15%;">
+      <div class="text-frame zoom" style="background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 95%; margin-top: 15%;">
         <strong>Directions:</strong> Rearrange the jumbled letters and identify the term being referred to in each of the following items. Write your answer on the space provided. Each clue is based on how both science and local communities understand coastal processes.
       </div>
       <div class="activity-container">
@@ -914,13 +1052,13 @@
 
     <!-- Slide 11 - Individual Activity with Frame7.png background -->
     <section class="slide _11">
-      <div class="text-frame zoom" style="font-size: 1.8em; background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 85%; margin-bottom: 30px;">
+      <div class="text-frame zoom" style="font-size: clamp(1.2rem, 4vw, 1.8em); background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 95%; margin-bottom: 20px;">
         <strong>Individual Activity – Coastal Case Analysis</strong><br><br>
         <strong>Instructions for Students:</strong><br>
         Click or open each case file below. Read the scenario carefully and answer the guide questions.
       </div>
       
-      <div style="font-size: 1.8em; display: flex; flex-wrap: wrap; justify-content: center; gap: 20px;">
+      <div style="font-size: clamp(1.2rem, 4vw, 1.8em); display: flex; flex-wrap: wrap; justify-content: center; gap: 15px;">
         <a href="https://docs.google.com/forms/d/e/1FAIpQLSf86vRCVkLvK2mJjdPimtXv4_k-TPzo425cpMe97niYT6BtHA/viewform?fbzx=6107663764069005554" target="_blank" class="case-button pink">
           📂 Case 1: Barangay Alegria – Retreating Shoreline
         </a>
@@ -937,10 +1075,10 @@
 
     <!-- Slide 12 - What's New with Frame7.png background -->
     <section class="slide _12">
-      <div class="text-frame left-align" style="font-size: 1.8em; font-weight: bold; background: rgba(255, 255, 255, 0.9);">
+      <div class="text-frame left-align" style="font-size: clamp(1.5rem, 5vw, 1.8em); font-weight: bold; background: rgba(255, 255, 255, 0.9);">
         What's New
       </div>
-      <div class="text-frame zoom" style="font-size: 1.6em;background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 85%; margin-top: 15%;">
+      <div class="text-frame zoom" style="font-size: clamp(1rem, 3vw, 1.6em);background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 95%; margin-top: 15%;">
         <strong>Revisiting Marine and Coastal Processes (LEK-Integrated)</strong><br><br>
         Have you noticed the terms in the previous activity? They all describe marine and coastal processes. The science that studies these processes in our oceans and seas is called oceanography. It combines knowledge from physics, chemistry, biology, geology, meteorology, mathematics, and even social sciences to explain the connection between people and the sea.<br><br>
         For coastal communities in the Philippines, these processes are not just scientific terms but part of daily life. Fishers observe tides to know the best time to go out to sea. Elders recall strong waves and storm surges that reshaped their shorelines. Farmers in coastal barangays notice sea level rise slowly affecting rice fields and wells. Earthquakes and crustal movements are remembered for causing tsunamis in some areas.
@@ -949,10 +1087,10 @@
 
     <!-- Slide 13 - Coastal Processes with Frame7.png background -->
     <section class="slide _13">
-      <div class="text-frame left-align" style="font-size: 1.8em; font-weight: bold; background: rgba(255, 255, 255, 0.9);">
+      <div class="text-frame left-align" style="font-size: clamp(1.5rem, 5vw, 1.8em); font-weight: bold; background: rgba(255, 255, 255, 0.9);">
         What's New
       </div>
-      <div class="text-frame zoom" style="font-size: 1.6em; background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 85%; margin-top: 15%;">
+      <div class="text-frame zoom" style="font-size: clamp(1rem, 3vw, 1.6em); background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 95%; margin-top: 15%;">
         <strong>Coastal processes include waves, tides, sea level change, crustal movement, and storm surges.</strong><br><br>
         ●<strong>Waves</strong> are formed by wind and storms, often noticed during habagat and typhoon season.<br>
         ●<strong>Tides</strong> are the rise and fall of seawater caused by the pull of the moon and Earth.<br>
@@ -964,10 +1102,10 @@
 
     <!-- Slide 14 - Effects of Marine and Coastal Processes with Frame7.png background -->
     <section class="slide _14">
-    <div class="text-frame left-align" style="font-size: 1.8em; font-weight: bold; background: rgba(255, 255, 255, 0.9);">
+    <div class="text-frame left-align" style="font-size: clamp(1.5rem, 5vw, 1.8em); font-weight: bold; background: rgba(255, 255, 255, 0.9);">
     What's New
     </div>
-    <div class="text-frame zoom" style="font-size: 1.6em; background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 85%; margin-top: 15%;">
+    <div class="text-frame zoom" style="font-size: clamp(1rem, 3vw, 1.6em); background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 95%; margin-top: 15%;">
     <strong>Effects of Marine and Coastal Processes</strong><br><br>
     When these processes intensify, they may result in coastal hazards such as erosion, flooding, and damage to homes, crops, and fishing grounds. Local knowledge, combined with science, helps communities prepare and adapt to these changes.
     </div>
@@ -978,10 +1116,10 @@
     </section>
 
     <section class="slide _15">
-    <div class="text-frame left-align" style="font-size: 1.8em; font-weight: bold; background: rgba(255, 255, 255, 0.9);">
+    <div class="text-frame left-align" style="font-size: clamp(1.5rem, 5vw, 1.8em); font-weight: bold; background: rgba(255, 255, 255, 0.9);">
     What's New
     </div>
-    <div class="text-frame zoom" style="font-size: 1.6em; background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 85%; margin-top: 15%;">
+    <div class="text-frame zoom" style="font-size: clamp(1rem, 3vw, 1.6em); background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 95%; margin-top: 15%;">
     <strong>Coastal Erosion (LEK in Siargao)</strong><br><br>
     Coastal erosion is the loss or wearing away of land along the shoreline due to the action of waves, tides, currents, strong winds, and storms. In Siargao, residents observe how shorelines slowly change after strong typhoons. Locals recall that during Typhoon Odette (Rai, 2021),
     many parts of the coast were eaten away by big waves, washing out coconut trees and damaging houses near the shore. 
@@ -995,10 +1133,10 @@
 
 
     <section class="slide _16">
-    <div class="text-frame left-align" style="font-size: 1.8em; font-weight: bold; background: rgba(255, 255, 255, 0.9);">
+    <div class="text-frame left-align" style="font-size: clamp(1.5rem, 5vw, 1.8em); font-weight: bold; background: rgba(255, 255, 255, 0.9);">
     What's New
     </div>
-    <div class="text-frame zoom" style="font-size: 1.6em; background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 85%; margin-top: 15%;">
+    <div class="text-frame zoom" style="font-size: clamp(1rem, 3vw, 1.6em); background: rgba(255, 255, 255, 0.9); text-align: left; max-width: 95%; margin-top: 15%;">
     <strong>Saltwater Intrusion </strong><br><br>
     Saltwater intrusion happens when seawater seeps into underground freshwater sources, called <strong>aquifers</strong>.
      These aquifers are made of sand, gravel, or rock that hold groundwater, which people usually get through wells.
@@ -1014,10 +1152,10 @@
     </section>
     <section class="slide _17">
       
-    <div class="text-frame left-align" style="font-size: 1.8em; font-weight: bold; background: rgba(255, 255, 255, 0.9);">
+    <div class="text-frame left-align" style="font-size: clamp(1.5rem, 5vw, 1.8em); font-weight: bold; background: rgba(255, 255, 255, 0.9);">
     What's New
     </div>
-    <div class="text-frame left-align" style="font-size: 1.7em; background: rgba(255, 255, 255, 0.9); text-align: left; line-height: 1;margin-top: 10%;  max-width: 35%;  ">
+    <div class="text-frame left-align" style="font-size: clamp(1rem, 3vw, 1.7em); background: rgba(255, 255, 255, 0.9); text-align: left; line-height: 1;margin-top: 10%;  max-width: 35%;  ">
     <strong>Submersion (LEK in Siargao)</strong><br><br>
    Submersion is the movement of sand and sediments from the beach into the shallow sea.
     In Siargao, locals notice this after strong waves and typhoons, when parts of the beach disappear underwater.
@@ -1276,4 +1414,3 @@
   </script>
 </body>
 </html>
-
