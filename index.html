@@ -37,7 +37,7 @@
     }
 
     /* Frame container - Enhanced for mobile */
-   .frame {
+  .frame {
   width: 1200px;
   height: 700px;
   border: 10px solid #444;
@@ -57,8 +57,8 @@
 @media (max-width: 1200px), (max-height: 700px) {
   .frame {
     transform: translate(-50%, -50%) 
-               scale(min(calc(100vw / 1200), calc(100vh / 700)));
-    transform-origin: top left;
+               scale(calc(min(100vw / 1200, 100vh / 700)));
+    transform-origin: center center;
   }
 }
 
@@ -1385,4 +1385,5 @@
 </body>
 
 </html>
+
 
