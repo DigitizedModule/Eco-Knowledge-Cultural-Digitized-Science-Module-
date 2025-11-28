@@ -38,17 +38,16 @@
 
     /* Frame container - Enhanced for mobile */
    .frame {
-  width: 1200px;
-  height: 700px;
+  width: 100%;
+  max-width: 1200px;   /* keeps it from stretching too wide on big screens */
+  height: 100%;
+  max-height: 700px;   /* keeps it from stretching too tall */
   border: 10px solid #444;
   border-radius: 15px;
   background: var(--slide-bg);
   box-shadow: 0 0 30px rgba(0,0,0,0.7);
   overflow: hidden;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  margin: auto;
   display: flex;
   flex-direction: column;
 }
@@ -1380,4 +1379,5 @@
     showSlide(0);
   </script>
 </body>
+
 </html>
