@@ -150,7 +150,14 @@
         transform: scale(1);
       }
     }
-
+    @media (hover: hover) and (pointer: fine) {
+      button:hover:not(:disabled),
+      .choice:hover {
+      background: #666;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+      }
+    }
     .slide {
       display: none;
       flex: 1;
@@ -1389,3 +1396,4 @@
   </script>
 </body>
 </html>
+
