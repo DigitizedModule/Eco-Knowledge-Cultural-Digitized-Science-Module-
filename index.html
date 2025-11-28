@@ -37,7 +37,7 @@
     }
 
     /* Frame container - Enhanced for mobile */
-  .frame {
+   .frame {
   width: 1200px;
   height: 700px;
   border: 10px solid #444;
@@ -52,13 +52,10 @@
   display: flex;
   flex-direction: column;
 }
-
-/* Scale down proportionally to fit both width AND height */
-@media (max-width: 1200px), (max-height: 700px) {
+    @media (max-width: 1200px) {
   .frame {
-    transform: translate(-50%, -50%) 
-               scale(calc(min(100vw / 1200, 100vh / 700)));
-    transform-origin: center center;
+    transform: translate(-50%, -50%) scale(calc(100vw / 1200));
+    transform-origin: top left;
   }
 }
 
@@ -1383,7 +1380,4 @@
     showSlide(0);
   </script>
 </body>
-
 </html>
-
-
