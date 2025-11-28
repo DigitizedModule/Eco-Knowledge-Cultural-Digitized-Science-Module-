@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Interactive Presentation with Frame</title>
   <style>
     :root {
@@ -437,14 +439,7 @@
       font-weight: bold;
       touch-action: manipulation;
     }
-    @media (hover: hover) and (pointer: fine) {
-      button:hover:not(:disabled),
-      .choice:hover {
-      background: #666;
-      transform: translateY(-2px);
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-      }
-    }
+
     button:hover:not(:disabled) {
       background: #666;
       transform: translateY(-2px);
@@ -459,10 +454,6 @@
       background: #666;
       cursor: not-allowed;
       opacity: 0.6;
-    }
-    button:focus,
-    .choice:focus {
-    outline: none;
     }
 
     @keyframes fadeIn {
@@ -770,6 +761,55 @@
         padding: 12px;
       }
     }
+    /* Add to your existing CSS */
+
+/* Touch feedback state */
+button.touching,
+.choice.touching,
+.case-button.touching {
+  transform: translateY(0) !important;
+  background: #555 !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3) !important;
+  opacity: 0.8 !important;
+}
+
+/* Improved mobile touch target size */
+@media screen and (max-width: 768px) {
+  button, .choice, .case-button {
+    min-height: 44px; /* Minimum recommended touch target size */
+    min-width: 44px;
+  }
+  
+  /* Prevent accidental double-taps */
+  button, .choice, .case-button {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}
+
+/* Ensure proper active state reset */
+button:active:not(:disabled),
+.choice:active,
+.case-button:active {
+  transform: translateY(0) !important;
+  background: #555 !important;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.3) !important;
+  opacity: 0.8 !important;
+}
+
+/* Reset active state when touch ends */
+@supports (-webkit-touch-callout: none) {
+  button:active:not(:disabled):not(.touching),
+  .choice:active:not(.touching),
+  .case-button:active:not(.touching) {
+    transform: translateY(-2px) !important;
+    background: #666 !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3) !important;
+    opacity: 1 !important;
+  }
+}
   </style>
 </head>
 <body>
@@ -1179,12 +1219,65 @@
     const activitySlideIndex = 9; // Index of the activity slide (0-based)
     let testCompleted = false;
     let activityCompleted = false;
-    document.addEventListener("touchend", function () {
-    document.querySelectorAll("button, .choice").forEach(el => {
-    el.blur();              // clears focus
-    el.classList.remove("hover"); // if you use a custom hover class
+
+    document.addEventListener('DOMContentLoaded', function() {
+  // Handle touch events for buttons and interactive elements
+  const interactiveElements = document.querySelectorAll('button, .choice, .case-button');
+  
+  interactiveElements.forEach(element => {
+    // Add touch feedback
+    element.addEventListener('touchstart', function(e) {
+      this.classList.add('touching');
+      e.preventDefault(); // Prevent default touch behavior
+    }, { passive: false });
+    
+    element.addEventListener('touchend', function(e) {
+      this.classList.remove('touching');
+      e.preventDefault(); // Prevent default touch behavior
+    }, { passive: false });
+    
+    element.addEventListener('touchcancel', function(e) {
+      this.classList.remove('touching');
     });
-    });
+    
+    // Ensure buttons work properly with touch events
+    if (element.tagName === 'BUTTON') {
+      element.addEventListener('click', function(e) {
+        // Reset any active states
+        document.querySelectorAll('.touching').forEach(el => {
+          el.classList.remove('touching');
+        });
+      });
+    }
+  });
+  
+  // Handle slide navigation with touch
+  const slideNav = document.querySelector('.slide-nav');
+  if (slideNav) {
+    let touchStartX = 0;
+    let touchEndX = 0;
+    
+    slideNav.addEventListener('touchstart', function(e) {
+      touchStartX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    slideNav.addEventListener('touchend', function(e) {
+      touchEndX = e.changedTouches[0].screenX;
+      handleSwipe();
+    }, { passive: true });
+    
+    function handleSwipe() {
+      if (touchEndX < touchStartX - 50) {
+        // Swipe left - next slide
+        console.log('Swipe left detected');
+      }
+      if (touchEndX > touchStartX + 50) {
+        // Swipe right - previous slide
+        console.log('Swipe right detected');
+      }
+    }
+  }
+});
     
     // DOM elements
     const nextBtn = document.getElementById('next-btn');
